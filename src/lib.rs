@@ -89,6 +89,12 @@ impl DiaApiGatewayContract {
     }
 
     pub fn remove(&mut self, contract_id: String, request_id: U128){
+        /* Prevent other people from removing pending requests */
+        assert_eq!(
+            env::predecessor_account_id(),
+            self.owner_id,
+            "Can only be called by the owner"
+        );
         let index = self.requests.iter().position(|request| {
             request.request_id == request_id && request.contract_account_id == contract_id
         }).unwrap();
