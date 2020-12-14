@@ -2,9 +2,12 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::json_types::{U128};
 use near_sdk::{env, near_bindgen, AccountId};
+use near_sdk::payable;
 
 #[global_allocator]
 static ALLOC: near_sdk::wee_alloc::WeeAlloc = near_sdk::wee_alloc::WeeAlloc::INIT;
+
+const DEPOSIT_FOR_REQUEST: u64 = 0; /* Amount that clients have to pay to call make a request to the api */
 
 /// Request dto, same data structure used for storage and sharing
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Debug, PartialEq, Clone)]
@@ -49,8 +52,15 @@ impl DiaApiGatewayContract {
     /******************/
     /* Client methods */
     /******************/
-    //TODO make request payable
+    #[payable]
     pub fn request(&mut self, request_id: U128, data_key: String, data_item: String, callback: String, test: String){
+        /* Check that deposit (in yocto-near) is enough */
+        let attached_deposit = env::attached_deposit();
+        assert_eq!(attached_deposit >= DEPOSIT_FOR_REQUEST,
+        "The required attached deposit is {}, but the given attached deposit is is {}",
+        DEPOSIT_FOR_REQUEST,
+        attached_deposit
+    ); 
         let request = Request{
             contract_account_id: env::signer_account_id(),
             request_id,
@@ -60,6 +70,7 @@ impl DiaApiGatewayContract {
         };
         return self.requests.push(request)
     }
+
 
     /***********************/
     /* Dia adapter methods */
