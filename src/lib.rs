@@ -53,7 +53,7 @@ impl DiaApiGatewayContract {
     /* Client methods */
     /******************/
     #[payable]
-    pub fn request(&mut self, request_id: U128, data_key: String, data_item: String, callback: String, test: String){
+    pub fn request(&mut self, request_id: U128, data_key: String, data_item: String, callback: String){
         /* Check that deposit (in yocto-near) is enough */
         let attached_deposit = env::attached_deposit();
         assert_eq!(attached_deposit >= DEPOSIT_FOR_REQUEST,
@@ -91,3 +91,5 @@ impl DiaApiGatewayContract {
         self.requests.remove(index);
     }
 }
+
+
