@@ -20,8 +20,6 @@ pub struct Request {
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct DiaApiGatewayContract {
-    /// The Account Id of the owner of the contract
-    pub owner_id: AccountId,
     /// Persistent storage of the requests, completed requests are deleted
     pub requests: Vec<Request>
 }
@@ -36,9 +34,7 @@ impl Default for DiaApiGatewayContract {
 impl DiaApiGatewayContract {
     /// Initializes the contract with the given owner_id
     #[init]
-    pub fn new(
-        owner_id: AccountId
-    ) -> Self {
+    pub fn new() -> Self {
         assert!(!env::state_exists(), "Already initialized");
         assert!(
             env::is_valid_account_id(owner_id.as_bytes()),
@@ -53,7 +49,7 @@ impl DiaApiGatewayContract {
     /******************/
     /* Client methods */
     /******************/
-
+    //TODO make request payable
     pub fn request(&mut self, request_id: U128, data_key: String, data_item: String, callback: String, test: String){
         let request = Request{
             contract_account_id: env::signer_account_id(),
@@ -64,18 +60,6 @@ impl DiaApiGatewayContract {
         };
         return self.requests.push(request)
     }
-
-    /*****************/
-    /* Owner methods */
-    /*****************/
-
-    // pub fn transfer_ownership(&mut self){
-
-    // }
-
-    // pub fn transfer_balance(&mut self){
-
-    // }
 
     /***********************/
     /* Dia adapter methods */
