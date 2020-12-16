@@ -29,20 +29,28 @@ pub struct DiaGatewayRequestArgs {
 #[derive(Serialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Response{
-    request_id: String,
-    data_key: String,
-    data_item: String,
-    data_point: String,
+    symbol: String,
+    name: String,
+    price: f64,
+    price_yesterday: f64,
+    volume_yesterday_USD: f64,
+    source: String,
+    time: String,
+    itin; String,
     signer_account_id: String
 }
 
 impl Default for Response{
     fn default()-> Self {
         return Self {
-            request_id: String::new(),
-            data_key: String::new(),
-            data_item: String::new(),
-            data_point: String::new(),
+            symbol: String::new(),
+            name: String::new(),
+            price: 0,
+            price_yesterday: 0,
+            volume_yesterday_USD: 0,
+            source: String::new(),
+            time: String::new(),
+            itin; String::new(),
             signer_account_id: String::new()
         }
     }
@@ -93,11 +101,15 @@ impl ClientTestContract {
     }
 
     ///Callback that the dia-adapter uses
-    pub fn callback(&mut self, request_id: String, data_key: String, data_item: String, data_point: String, signer_account_id: String){
-        self.callbackResponse.request_id = request_id;
-        self.callbackResponse.data_key = data_key;
-        self.callbackResponse.data_item = data_item;
-        self.callbackResponse.data_point = data_point;
+    pub fn callback(&mut self, symbol: String, name: String, price: f64, price_yesterday: f64, volume_yesterday_USD: f64, source: String, time: String, itin: String, signer_account_id: String){
+        self.callbackResponse.symbol = symbol;
+        self.callbackResponse.name = name;
+        self.callbackResponse.price = price;
+        self.callbackResponse.price_yesterday = price_yesterday;
+        self.callbackResponse.volume_yesterday_USD = volume_yesterday_USD;
+        self.callbackResponse.source = source;
+        self.callbackResponse.time = time;
+        self.callbackResponse.itin = itin;
         self.callbackResponse.signer_account_id = signer_account_id;
     }
 
