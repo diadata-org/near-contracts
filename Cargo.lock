@@ -115,8 +115,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4785bdd1c96b2a846b2bd7cc02e86b6b3dbf14e7e53446c4f54c92a361040822"
 
 [[package]]
-name = "dia-sc"
-version = "1.0.0"
+name = "client-test-contract"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "lazy_static",
+ "log",
+ "near-sdk",
+ "quickcheck",
+ "quickcheck_macros",
+]
+
+[[package]]
+name = "dia-contract"
+version = "0.1.0"
 dependencies = [
  "env_logger",
  "lazy_static",

@@ -2,7 +2,7 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::json_types::{U128};
 use near_sdk::{env, near_bindgen, AccountId};
-use near_sdk::payable;
+
 
 #[global_allocator]
 static ALLOC: near_sdk::wee_alloc::WeeAlloc = near_sdk::wee_alloc::WeeAlloc::INIT;
@@ -60,8 +60,8 @@ impl DiaApiGatewayContract {
     pub fn request(&mut self, request_id: U128, data_key: String, data_item: String, callback: String){
         /* Check that deposit (in yocto-near) is enough */
         let attached_deposit = env::attached_deposit();
-        assert_eq!(attached_deposit >= DEPOSIT_FOR_REQUEST,
-        "The required attached deposit is {}, but the given attached deposit is is {}",
+        assert!(attached_deposit >= DEPOSIT_FOR_REQUEST.into(),
+        "The required attached deposit is {}, but the given attached deposit is {}",
         DEPOSIT_FOR_REQUEST,
         attached_deposit
     ); 
@@ -70,7 +70,7 @@ impl DiaApiGatewayContract {
             request_id,
             data_key,
             data_item,
-            callback: format!("{}{}", callback, test)
+            callback: callback
         };
         return self.requests.push(request)
     }
