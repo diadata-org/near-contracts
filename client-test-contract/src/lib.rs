@@ -28,8 +28,9 @@ pub struct DiaGatewayRequestArgs {
 
 #[derive(Deserialize, Serialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
+#[serde(untagged)]
 pub enum ResponseData{
-    Quote(QuoteData),
+    Quote (QuoteData),
     None
 }
 
