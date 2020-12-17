@@ -42,4 +42,4 @@ TODO
 
 ## Deploy Instructions
 
-* Execute `deploy.sh`, this will delete the sub-account to erase state, re-create it and deploy the contract.
+* Execute `deploy.sh`, this will deploy the contract erasing the state.
