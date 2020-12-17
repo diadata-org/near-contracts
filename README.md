@@ -41,4 +41,5 @@ The `dia-adapter` is periodically polling the `dia.oracles.near` smart contract 
 TODO
 
 ## Deploy Instructions
-TODO
+
+* Execute `deploy.sh`, this will delete the sub-account to erase state, re-create it and deploy the contract.
