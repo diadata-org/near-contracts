@@ -42,15 +42,7 @@ impl DiaApiGatewayContract {
     pub fn new(
         owner_id: AccountId
     ) -> Self {
-
-        if env::state_exists() {
-            assert_eq!(
-                env::predecessor_account_id(),
-                owner_id,
-                "Already initialized, only the owner can re-initialize"
-            );
-        }
-
+        assert!(!env::state_exists(), "Already initialized");
         assert!(
             env::is_valid_account_id(owner_id.as_bytes()),
             "The owner account ID is invalid"
