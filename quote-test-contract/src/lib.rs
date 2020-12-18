@@ -9,6 +9,7 @@ static ALLOC: near_sdk::wee_alloc::WeeAlloc = near_sdk::wee_alloc::WeeAlloc::INI
 const DEPOSIT_FOR_REQUEST: Balance = 0; /* Amount that clients have to pay to call make a request to the api */
 const GAS_FOR_REQUEST: Gas = 50_000_000_000_000;
 const DIA_GATEWAY_ACCOUNT_ID: &str = "contract.dia-oracles.testnet";
+const SIGNER_DIA_ORACLES_ACCOUNT_ID:&str  = "dia-oracles.testnet";
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -43,16 +44,16 @@ pub struct Response{
 
 #[derive(Deserialize, Serialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
+#[allow(non_snake_case)]
 pub struct QuoteData {
-    symbol: String,
-    name: String,
-    price: f64,
-    price_yesterday: f64,
-    volume_yesterday_usd: f64,
-    source: String,
-    time: String,
-    itin: String,
-    signer_account_id: String
+    Symbol: String,
+    Name: String,
+    Price: f64,
+    PriceYesterday: f64,
+    VolumeYesterdayUSD: f64,
+    Source: String,
+    Time: String,
+    ITIN: String
 }
 
 impl Default for QuoteTestContract {
@@ -119,6 +120,12 @@ impl QuoteTestContract {
     ///View the dia-adapter response to the contract's request
     pub fn get_callback_response(&self)-> Response{
         return self.callback_response.clone();
+
+    }
+
+    ///Clear cached response
+    pub fn clear_callback_response(&mut self) {
+        self.callback_response.data = ResponseData::None; //Clear
     }
 
     /***********************/
@@ -127,11 +134,11 @@ impl QuoteTestContract {
     ///Callback to receive dia-api data
     pub fn callback(&mut self, err: String, data: ResponseData){
         //verify data origin
-        assert!(env::predecessor_account_id()==DIA_GATEWAY_ACCOUNT_ID);
+        assert!(env::signer_account_id() == SIGNER_DIA_ORACLES_ACCOUNT_ID);
         //use quote
         match &data {
             ResponseData::None => env::log("empty data".as_bytes()),
-            ResponseData::Quote(x)=>env::log(format!("Quote {} {}",x.name,x.price).as_bytes())
+            ResponseData::Quote(x)=>env::log(format!("Quote {} {}",x.Name,x.Price).as_bytes())
         }
         //store last response
         self.callback_response = Response {
