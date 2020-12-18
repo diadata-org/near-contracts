@@ -66,7 +66,7 @@ impl DiaApiGatewayContract {
         attached_deposit
     ); 
         let request = Request{
-            contract_account_id: env::signer_account_id(),
+            contract_account_id: env::predecessor_account_id(),
             request_id,
             data_key,
             data_item,

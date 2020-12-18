@@ -5,12 +5,19 @@
 # Seed Phrase: drive help tiny office kiss divert autumn normal hill copy dove accident
 #
 
-#GATEWAY CONTRACT
+##---------------------
+## GATEWAY MAIN CONTRACT
+##---------------------
 #create contract.dia-oracles.testnet account
 #near create-account contract.dia-oracles.testnet --masterAccount dia-oracles.testnet
 #near deploy contract.dia-oracles.testnet res/dia_contract.wasm new '{"owner_id":"dia-oracles.testnet"}' 
 
-#TEST CONTRACT
+## deploy no-init
+near deploy contract.dia-oracles.testnet res/dia_contract.wasm
+
+##---------------------
+## QUOTE TEST CONTRACT
+##---------------------
 #create quote-test-contract account
 #near create-account quote-client.dia-oracles.testnet --masterAccount dia-oracles.testnet
 #near deploy quote-client.dia-oracles.testnet res/quote_test_contract.wasm new '{"owner_id":"dia-oracles.testnet"}' 
