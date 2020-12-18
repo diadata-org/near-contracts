@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "dia-contract",
-    "client-test-contract"
+    "quote-test-contract"
 ]
 
 [profile.release]

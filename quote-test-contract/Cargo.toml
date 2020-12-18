@@ -1,5 +1,5 @@
 [package]
-name = "client-test-contract"
+name = "quote-test-contract"
 version = "0.1.0"
 authors = ["Lautaro <lautarocutri@gmail.com> "]
 edition = "2018"

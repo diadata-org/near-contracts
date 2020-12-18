@@ -115,18 +115,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4785bdd1c96b2a846b2bd7cc02e86b6b3dbf14e7e53446c4f54c92a361040822"
 
 [[package]]
-name = "client-test-contract"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "lazy_static",
- "log",
- "near-sdk",
- "quickcheck",
- "quickcheck_macros",
-]
-
-[[package]]
 name = "dia-contract"
 version = "0.1.0"
 dependencies = [
@@ -446,6 +434,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aa563d17ecb180e500da1cfd2b028310ac758de548efdd203e18f283af693f37"
 dependencies = [
  "proc-macro2",
+]
+
+[[package]]
+name = "quote-test-contract"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "lazy_static",
+ "log",
+ "near-sdk",
+ "quickcheck",
+ "quickcheck_macros",
 ]
 
 [[package]]
