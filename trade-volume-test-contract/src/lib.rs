@@ -42,8 +42,6 @@ pub struct Response{
     data: ResponseData,
 }
 
-#[derive(Deserialize, Serialize, BorshDeserialize, BorshSerialize, Clone)]
-#[serde(crate = "near_sdk::serde")]
 pub type TradeVolumeData = f64;
 
 impl Default for TradeVolumeTestContract {

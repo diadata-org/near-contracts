@@ -46,7 +46,7 @@ pub struct Response{
 #[serde(crate = "near_sdk::serde")]
 #[allow(non_snake_case)]
 pub struct SymbolsData {
-    Symbols: [String]
+    Symbols: Vec<String>
 }
 
 impl Default for SymbolsTestContract {
