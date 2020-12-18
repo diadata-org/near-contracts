@@ -1,7 +1,10 @@
 [workspace]
 members = [
     "dia-contract",
-    "quote-test-contract"
+    "quote-test-contract",
+    "supply-test-contract",
+    "trade-volume-test-contract",
+    "symbols-test-contract"
 ]
 
 [profile.release]
