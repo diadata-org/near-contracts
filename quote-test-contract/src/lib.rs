@@ -99,7 +99,7 @@ impl QuoteTestContract {
 
     ///Make a request to the dia-gateway smart contract
     #[payable]
-    pub fn make_request(&mut self, data_key: String, data_item: String)-> near_sdk::Promise{
+    pub fn make_request(&mut self, data_item: String)-> near_sdk::Promise{
 
         self.request_id+=1;
 
@@ -107,7 +107,7 @@ impl QuoteTestContract {
             b"request".to_vec(),
             near_sdk::serde_json::to_vec(&DiaGatewayRequestArgs {
                 request_id: U128::from(self.request_id),
-                data_key: data_key,
+                data_key: String::from("quote"),
                 data_item: data_item,
                 callback: String::from("callback")
             }).unwrap(),
