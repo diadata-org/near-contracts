@@ -142,4 +142,57 @@ impl SymbolsTestContract {
 
 }
 
+/**************/
+/* Unit tests */
+/**************/
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use near_sdk::MockedBlockchain;
+    use near_sdk::{testing_env, VMContext};
+    use std::sync::Once;
+
+
+    static INIT: Once = Once::new();
+
+    pub fn initialize() {
+        INIT.call_once(|| {
+            /* Set the contract context */
+            let context = get_context(String::from("client.testnet"), 10);                    
+            testing_env!(context); 
+        });
+    }
+
+    
+    fn get_context(predecessor_account_id: String, storage_usage: u64) -> VMContext {
+        VMContext {
+            current_account_id: "dia-oracles.testnet".to_string(),
+            signer_account_id: "dia-oracles.testnet".to_string(),
+            signer_account_pk: vec![0, 1, 2],
+            predecessor_account_id,
+            input: vec![],
+            block_index: 0,
+            block_timestamp: 0,
+            account_balance: 0,
+            account_locked_balance: 0,
+            storage_usage,
+            attached_deposit: 0,
+            prepaid_gas: 10u64.pow(18),
+            random_seed: vec![0, 1, 2],
+            is_view: false,
+            output_data_receivers: vec![],
+            epoch_height: 19,
+        }
+    }
+
+    #[test]
+    fn test_id() {
+        initialize();
+        /* Initialize contract */
+        let mut contract = super::SymbolsTestContract::new();
+        let id: U128 = 13123123.into();
+        contract.set_id(id.clone());
+        assert_eq!(contract.get_id(), id, "Contract id is different from the expected");
+    }
+}
