@@ -31,7 +31,6 @@ near deploy quote-client.dia-oracles.testnet res/quote_test_contract.wasm
 #create supply-test-contract account
 #near create-account supply-client.dia-oracles.testnet --masterAccount dia-oracles.testnet
 #near deploy supply-client.dia-oracles.testnet res/supply_test_contract.wasm new
-# {"account_id":"supply-client.dia-oracles.testnet","public_key":"ed25519:F4KarCDxQ6kZmrhmTcmBaa7AQ8jEQmpGJ8Pf3LFwKzAb","private_key":"ed25519:2yWosCmw4WNMmNqt4wtCb2dpvYekA11bbPTHirfZoHzPUp4qa5gbczK7wtPo3Lvp4CRJnCrgE7rY7i3Ciu48inQX"}
 
 ## deploy no-init
 near deploy supply-client.dia-oracles.testnet res/supply_test_contract.wasm 
@@ -42,7 +41,6 @@ near deploy supply-client.dia-oracles.testnet res/supply_test_contract.wasm
 #create trade-volume-test-contract account
 #near create-account volume-client.dia-oracles.testnet --masterAccount dia-oracles.testnet
 #near deploy volume-client.dia-oracles.testnet res/trade_volume_test_contract.wasm new
-# {"account_id":"volume-client.dia-oracles.testnet","public_key":"ed25519:EKLWR2VFNiaXQjxff8RDVSMgF79oB8LNkxXrttUfiY58","private_key":"ed25519:24JeQFyTNAGnpfbPzkyxwtVW9JHTXgYTebd69N2EYiWjSQooUhRH5wHztm5FPx7w6zcGxPhZk79xetixUctda2st"}
 
 ## deploy no-init
 near deploy volume-client.dia-oracles.testnet res/trade_volume_test_contract.wasm 
@@ -53,7 +51,6 @@ near deploy volume-client.dia-oracles.testnet res/trade_volume_test_contract.was
 #create symbols-test-contract account
 #near create-account symbols-client.dia-oracles.testnet --masterAccount dia-oracles.testnet
 #near deploy symbols-client.dia-oracles.testnet res/symbols_volume_test_contract.wasm new
-# {"account_id":"symbols-client.dia-oracles.testnet","public_key":"ed25519:HKctk4N86tiqATp5xkS4mGeqTykVYFAav7yUqjca9pyL","private_key":"ed25519:U3TncxNnZA9f8KUW8JcBr9awfaqEPUNF13hwsAApYDDygkYCLiGPfW5hZAtQzp871wezrLUaJB3upfqQhEjtavr"}
 
 ## deploy no-init
 near deploy symbols-client.dia-oracles.testnet res/symbols_volume_test_contract.wasm 
