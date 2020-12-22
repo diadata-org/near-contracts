@@ -111,24 +111,41 @@ mod tests {
     use super::*;
     use near_sdk::MockedBlockchain;
     use near_sdk::{testing_env, VMContext};
-    use std::sync::Once;
 
 
-    static INIT: Once = Once::new();
+    static OWNER: &str = "testowner.testnet";
+    static TEST_ACCOUNT: &str = "client.testnet";
 
-    pub fn initialize() {
-        INIT.call_once(|| {
-            /* Set the contract context */
-            let context = get_context(String::from("client.testnet"), 10);                    
-            testing_env!(context); 
-        });
+    /// Set the contract context
+    pub fn initialize(){
+        let context = get_context(String::from(TEST_ACCOUNT), 10);                    
+        testing_env!(context); 
+    }
+    
+    /// Creates a contract
+    pub fn create_contract() -> DiaApiGatewayContract{
+        let contract = super::DiaApiGatewayContract::new(String::from(OWNER));
+        return contract;
     }
 
-    
+    ///Creates a request as a client and returns the expected saved value
+    pub fn create_request(contract: &mut DiaApiGatewayContract) -> Request{
+        contract.request(U128::from(1231223), String::from("quote"), String::from("BTC"), String::from("callback"));
+        let expected_request = Request{
+            contract_account_id: String::from(TEST_ACCOUNT),
+            request_id: U128::from(1231223),
+            data_key: String::from("quote"),
+            data_item: String::from("BTC"),
+            callback: String::from("callback")
+        };
+        return expected_request;
+    }
+
+    /// Defines the context for the contract
     fn get_context(predecessor_account_id: String, storage_usage: u64) -> VMContext {
         VMContext {
-            current_account_id: "dia-oracles.testnet".to_string(),
-            signer_account_id: "dia-oracles.testnet".to_string(),
+            current_account_id: OWNER.to_string(),
+            signer_account_id: OWNER.to_string(),
             signer_account_pk: vec![0, 1, 2],
             predecessor_account_id,
             input: vec![],
@@ -149,10 +166,56 @@ mod tests {
     #[test]
     fn test_creation() {
         initialize();
+        let contract = create_contract();
+        assert_eq!(contract.owner_id, String::from(OWNER), "Owner is different from the expected");
+    }
 
-        let owner = String::from("testowner.testnet");
-        let contract = super::DiaApiGatewayContract::new(owner.clone());
-        assert_eq!(contract.owner_id, owner, "Owner is different from the expected");
+    #[test]
+    #[should_panic]
+    fn test_default_creation() {
+        initialize();
+        <DiaApiGatewayContract as Default>::default();
+    }
+
+    #[test]
+    fn test_client_methods(){
+        initialize();
+        let mut contract = create_contract();
+        let expected_request = create_request(&mut contract);
+        
+        if let Some(request) = contract.requests.get(0) {
+            assert_eq!(expected_request, *request, "Saved request has wrong field values");
+        }
+        else{
+            panic!("Request not saved");
+        }
+    }
+
+    #[test]
+    fn test_adapter_methods(){
+        initialize();
+        /* Create a request as a client */
+        let mut contract = create_contract();
+        let expected_request = create_request(&mut contract);
+        /* Change context to match a method called by the adapter */
+        let context = get_context(String::from(OWNER), 10);                    
+        testing_env!(context); 
+      
+        println!("Testing 'get_pending_requests_count' method");
+        let pending_requests_count = contract.get_pending_requests_count();
+        assert_eq!(pending_requests_count, 1 as u64, "Wrong value ({}) in pending requests", pending_requests_count);
+
+        println!("Testing 'get_pending_requests' method");
+        let pending_requests = contract.get_pending_requests();
+        if let Some(request) = pending_requests.get(0) {
+            assert_eq!(expected_request, *request, "Method 'get_pending_requests' returns wrong data");
+        }
+        else{
+            panic!("Method 'get_pending_requests' dont returns data");
+        }
+
+        println!("Testing 'remove' method");
+        contract.remove(String::from(TEST_ACCOUNT), U128::from(1231223));
     }
     
 }

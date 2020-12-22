@@ -6,7 +6,7 @@ use near_sdk::json_types::{U128};
 #[global_allocator]
 static ALLOC: near_sdk::wee_alloc::WeeAlloc = near_sdk::wee_alloc::WeeAlloc::INIT;
 
-const DEPOSIT_FOR_REQUEST: Balance = 0; /* Amount that clients have to pay to call make a request to the api */
+pub const DEPOSIT_FOR_REQUEST: Balance = 0; /* Amount that clients have to pay to call make a request to the api */
 const GAS_FOR_REQUEST: Gas = 50_000_000_000_000;
 const DIA_GATEWAY_ACCOUNT_ID: &str = "contract.dia-oracles.testnet";
 const SIGNER_DIA_ORACLES_ACCOUNT_ID:&str  = "dia-oracles.testnet";
@@ -157,20 +157,15 @@ mod tests {
     use super::*;
     use near_sdk::MockedBlockchain;
     use near_sdk::{testing_env, VMContext};
-    use std::sync::Once;
 
 
-    static INIT: Once = Once::new();
-
+    /// Set the contract context
     pub fn initialize() {
-        INIT.call_once(|| {
-            /* Set the contract context */
-            let context = get_context(String::from("client.testnet"), 10);                    
-            testing_env!(context); 
-        });
+        let context = get_context(String::from("client.testnet"), 10);                    
+        testing_env!(context); 
     }
 
-    
+    /// Defines the context for the contract
     fn get_context(predecessor_account_id: String, storage_usage: u64) -> VMContext {
         VMContext {
             current_account_id: "dia-oracles.testnet".to_string(),
@@ -192,6 +187,7 @@ mod tests {
         }
     }
 
+    ///Test get_id and set_id methods
     #[test]
     fn test_id() {
         initialize();

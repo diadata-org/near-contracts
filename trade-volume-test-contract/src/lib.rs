@@ -146,20 +146,16 @@ mod tests {
     use super::*;
     use near_sdk::MockedBlockchain;
     use near_sdk::{testing_env, VMContext};
-    use std::sync::Once;
 
 
-    static INIT: Once = Once::new();
-
+    /// Set the contract context
     pub fn initialize() {
-        INIT.call_once(|| {
-            /* Set the contract context */
-            let context = get_context(String::from("client.testnet"), 10);                    
-            testing_env!(context); 
-        });
+        let context = get_context(String::from("client.testnet"), 10);                    
+        testing_env!(context); 
     }
 
     
+    /// Defines the context for the contract
     fn get_context(predecessor_account_id: String, storage_usage: u64) -> VMContext {
         VMContext {
             current_account_id: "dia-oracles.testnet".to_string(),
@@ -181,6 +177,7 @@ mod tests {
         }
     }
 
+    ///Test get_id and set_id methods
     #[test]
     fn test_id() {
         initialize();
