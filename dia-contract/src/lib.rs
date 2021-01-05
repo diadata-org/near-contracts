@@ -7,7 +7,9 @@ use near_sdk::{env, near_bindgen, AccountId};
 #[global_allocator]
 static ALLOC: near_sdk::wee_alloc::WeeAlloc = near_sdk::wee_alloc::WeeAlloc::INIT;
 
-const DEPOSIT_FOR_REQUEST: u64 = 0; /* Amount that clients have to pay to call make a request to the api */
+const ONE_NEAR:u128 = 1_000_000_000_000_000_000_000_000;
+const ONE_NEAR_CENT:u128 = ONE_NEAR/100;
+const DEPOSIT_FOR_REQUEST: u128 = ONE_NEAR_CENT; // amount that clients have to attach to make a request to the api
 
 /// Request dto, same data structure used for storage and sharing
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Debug, PartialEq, Clone)]
@@ -59,12 +61,14 @@ impl DiaApiGatewayContract {
     #[payable]
     pub fn request(&mut self, request_id: U128, data_key: String, data_item: String, callback: String){
         /* Check that deposit (in yocto-near) is enough */
-        let attached_deposit = env::attached_deposit();
-        assert!(attached_deposit >= DEPOSIT_FOR_REQUEST.into(),
-        "The required attached deposit is {}, but the given attached deposit is {}",
-        DEPOSIT_FOR_REQUEST,
-        attached_deposit
-    ); 
+        if DEPOSIT_FOR_REQUEST>0 {
+            let attached_deposit = env::attached_deposit();
+            assert!(attached_deposit >= DEPOSIT_FOR_REQUEST,
+                "The required attached deposit is {}, but the given attached deposit is {}",
+                DEPOSIT_FOR_REQUEST,
+                attached_deposit
+            ); 
+        }
         let request = Request{
             contract_account_id: env::predecessor_account_id(),
             request_id,
@@ -130,11 +134,11 @@ mod tests {
 
     ///Creates a request as a client and returns the expected saved value
     pub fn create_request(contract: &mut DiaApiGatewayContract) -> Request{
-        contract.request(U128::from(1231223), String::from("quote"), String::from("BTC"), String::from("callback"));
+        contract.request(U128::from(1231223), String::from("quotation"), String::from("BTC"), String::from("callback"));
         let expected_request = Request{
             contract_account_id: String::from(TEST_ACCOUNT),
             request_id: U128::from(1231223),
-            data_key: String::from("quote"),
+            data_key: String::from("quotation"),
             data_item: String::from("BTC"),
             callback: String::from("callback")
         };

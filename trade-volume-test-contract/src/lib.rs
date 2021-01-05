@@ -1,12 +1,17 @@
+//
+// VOLUME DIAAPI TEST CONTRACT/EXAMPLE
+//
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, Balance, Gas};
+use near_sdk::{env, near_bindgen, Gas};
 use near_sdk::json_types::{U128};
 
 #[global_allocator]
 static ALLOC: near_sdk::wee_alloc::WeeAlloc = near_sdk::wee_alloc::WeeAlloc::INIT;
 
-const DEPOSIT_FOR_REQUEST: Balance = 0; /* Amount that clients have to pay to call make a request to the api */
+const ONE_NEAR:u128 = 1_000_000_000_000_000_000_000_000;
+const ONE_NEAR_CENT:u128 = ONE_NEAR/100;
+const DEPOSIT_FOR_REQUEST: u128 = ONE_NEAR_CENT; // amount that clients have to attach to make a request to the api
 const GAS_FOR_REQUEST: Gas = 50_000_000_000_000;
 const DIA_GATEWAY_ACCOUNT_ID: &str = "contract.dia-oracles.testnet";
 const SIGNER_DIA_ORACLES_ACCOUNT_ID:&str  = "dia-oracles.testnet";
@@ -15,7 +20,7 @@ const SIGNER_DIA_ORACLES_ACCOUNT_ID:&str  = "dia-oracles.testnet";
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct TradeVolumeTestContract {
     pub request_id: u128,
-    pub callback_response: Response
+    pub last_callback_response: Response
 }
 
 #[derive(Serialize)]
@@ -38,6 +43,7 @@ pub enum ResponseData{
 #[derive(Serialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Response{
+    request_id: U128,
     err: String,
     data: ResponseData,
 }
@@ -59,7 +65,8 @@ impl TradeVolumeTestContract {
         assert!(!env::state_exists(), "This contract is already initialized");
         return Self {
              request_id: 100,
-             callback_response: Response{
+             last_callback_response: Response{
+                 request_id:U128::from(0),
                  err: String::new(),
                  data: ResponseData::None
              }
@@ -106,28 +113,31 @@ impl TradeVolumeTestContract {
 
     ///View the last dia-adapter response to the contract's request
     pub fn get_callback_response(&self)-> Response{
-        return self.callback_response.clone();
+        return self.last_callback_response.clone();
     }
 
     ///Clear cached response
     pub fn clear_callback_response(&mut self) {
-        self.callback_response.data = ResponseData::None; //Clear
+        self.last_callback_response.data = ResponseData::None; //Clear
     }
 
     /***********************/
     /* Dia adapter methods */
     /***********************/
     ///Callback to receive dia-api data
-    pub fn callback(&mut self, err: String, data: ResponseData){
+    pub fn callback(&mut self, request_id:U128, err: String, data: ResponseData){
         //verify data origin
         assert!(env::signer_account_id() == SIGNER_DIA_ORACLES_ACCOUNT_ID);
+        //check for errrors in the request
+        if err.len()>0 {env::log(err.as_bytes())}
         //use trade volume
         match &data {
             ResponseData::None => env::log("empty data".as_bytes()),
             ResponseData::TradeVolume(x)=>env::log(format!("Trade volume {}", x).as_bytes())
         }
         //store last response
-        self.callback_response = Response {
+        self.last_callback_response = Response {
+            request_id: request_id,
             err: err,
             data: data
         };

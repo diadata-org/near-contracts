@@ -1,12 +1,17 @@
+//
+// SYMBOLS DIAAPI TEST CONTRACT/EXAMPLE
+//
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, Balance, Gas};
+use near_sdk::{env, near_bindgen, Gas};
 use near_sdk::json_types::{U128};
 
 #[global_allocator]
 static ALLOC: near_sdk::wee_alloc::WeeAlloc = near_sdk::wee_alloc::WeeAlloc::INIT;
 
-const DEPOSIT_FOR_REQUEST: Balance = 0; /* Amount that clients have to pay to call make a request to the api */
+const ONE_NEAR:u128 = 1_000_000_000_000_000_000_000_000;
+const ONE_NEAR_CENT:u128 = ONE_NEAR/100;
+const DEPOSIT_FOR_REQUEST: u128 = ONE_NEAR_CENT; // amount that clients have to attach to make a request to the api
 const GAS_FOR_REQUEST: Gas = 50_000_000_000_000;
 const DIA_GATEWAY_ACCOUNT_ID: &str = "contract.dia-oracles.testnet";
 const SIGNER_DIA_ORACLES_ACCOUNT_ID:&str  = "dia-oracles.testnet";
@@ -38,6 +43,7 @@ pub enum ResponseData{
 #[derive(Serialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Response{
+    request_id: U128,
     err: String,
     data: ResponseData,
 }
@@ -58,7 +64,6 @@ impl Default for SymbolsTestContract {
 #[near_bindgen]
 impl SymbolsTestContract {
 
-    ///Initialize the contract with a random id
     #[init]
     pub fn new()-> Self{
         /* Prevent re-initializations */
@@ -66,8 +71,9 @@ impl SymbolsTestContract {
         return Self {
              request_id: 100,
              callback_response: Response{
-                 err: String::new(),
-                 data: ResponseData::None
+                request_id: 0.into(),
+                err: String::new(),
+                data: ResponseData::None
              }
          };
     }
@@ -125,9 +131,11 @@ impl SymbolsTestContract {
     /* Dia adapter methods */
     /***********************/
     ///Callback to receive dia-api data
-    pub fn callback(&mut self, err: String, data: ResponseData){
+    pub fn callback(&mut self, request_id:U128, err: String, data: ResponseData){
         //verify data origin
         assert!(env::signer_account_id() == SIGNER_DIA_ORACLES_ACCOUNT_ID);
+        //check for errrors in the request
+        assert!(err.len()==0,err);
         //use symbols
         match &data {
             ResponseData::None => env::log("empty data".as_bytes()),
@@ -135,6 +143,7 @@ impl SymbolsTestContract {
         }
         //store last response
         self.callback_response = Response {
+            request_id: request_id,
             err: err,
             data: data
         };

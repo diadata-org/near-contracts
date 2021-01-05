@@ -1,23 +1,32 @@
+//
+// QUOTATION DIAAPI TEST CONTRACT/EXAMPLE
+//
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, Balance, Gas};
+use near_sdk::{env, near_bindgen, Gas};
 use near_sdk::json_types::{U128};
 
 #[global_allocator]
 static ALLOC: near_sdk::wee_alloc::WeeAlloc = near_sdk::wee_alloc::WeeAlloc::INIT;
 
-const DEPOSIT_FOR_REQUEST: Balance = 0; /* Amount that clients have to pay to call make a request to the api */
+const ONE_NEAR:u128 = 1_000_000_000_000_000_000_000_000;
+const ONE_NEAR_CENT:u128 = ONE_NEAR/100;
+const DEPOSIT_FOR_REQUEST: u128 = ONE_NEAR_CENT; // amount that clients have to attach to make a request to the api
 const GAS_FOR_REQUEST: Gas = 50_000_000_000_000;
 const DIA_GATEWAY_ACCOUNT_ID: &str = "contract.dia-oracles.testnet";
 const SIGNER_DIA_ORACLES_ACCOUNT_ID:&str  = "dia-oracles.testnet";
 
+//contract state
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct QuoteTestContract {
-    pub request_id: u128,
-    pub callback_response: Response
+    //current request id
+    pub current_request_id: u128,
+    //last response received
+    pub last_callback_response: Response
 }
 
+///standard request format
 #[derive(Serialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct DiaGatewayRequestArgs {
@@ -27,6 +36,7 @@ pub struct DiaGatewayRequestArgs {
     callback: String
 }
 
+/// Enum declaring diadata-api "quotation" response as optional
 #[derive(Deserialize, Serialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 #[serde(untagged)]
@@ -35,13 +45,17 @@ pub enum ResponseData{
     None
 }
 
+///standard response format
 #[derive(Serialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Response{
+    request_id: U128,
     err: String,
     data: ResponseData,
 }
 
+/// Struct declaring diadata-api response model
+// https://docs.diadata.org/documentation/api-1/api-endpoints#quotation
 #[derive(Deserialize, Serialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 #[allow(non_snake_case)]
@@ -65,14 +79,14 @@ impl Default for QuoteTestContract {
 #[near_bindgen]
 impl QuoteTestContract {
 
-    ///Initialize the contract with a random id
     #[init]
     pub fn new()-> Self{
         /* Prevent re-initializations */
         assert!(!env::state_exists(), "This contract is already initialized");
         return Self {
-             request_id: 100,
-             callback_response: Response{
+             current_request_id: 100,
+             last_callback_response: Response{
+                 request_id: 0.into(),
                  err: String::new(),
                  data: ResponseData::None
              }
@@ -86,29 +100,29 @@ impl QuoteTestContract {
     
     ///Set request_id to a supplied value
     pub fn set_id(&mut self, request_id: U128){
-        self.request_id = request_id.0;
+        self.current_request_id = request_id.0;
     }
 
     ///Get request_id
     pub fn get_id(&self)-> U128{
-        return self.request_id.into();
+        return self.current_request_id.into();
     }
 
     /****************/
-    /* Test methods */
+    /* Main methods */
     /****************/
 
     ///Make a request to the dia-gateway smart contract
     #[payable]
     pub fn make_request(&mut self, data_item: String)-> near_sdk::Promise{
 
-        self.request_id+=1;
+        self.current_request_id+=1;
 
         return near_sdk::Promise::new(String::from(DIA_GATEWAY_ACCOUNT_ID)).function_call(
             b"request".to_vec(),
             near_sdk::serde_json::to_vec(&DiaGatewayRequestArgs {
-                request_id: U128::from(self.request_id),
-                data_key: String::from("quote"),
+                request_id: U128::from(self.current_request_id),
+                data_key: String::from("quotation"),
                 data_item: data_item,
                 callback: String::from("callback")
             }).unwrap(),
@@ -119,29 +133,31 @@ impl QuoteTestContract {
 
     ///View the dia-adapter response to the contract's request
     pub fn get_callback_response(&self)-> Response{
-        return self.callback_response.clone();
-
+        return self.last_callback_response.clone();
     }
 
     ///Clear cached response
     pub fn clear_callback_response(&mut self) {
-        self.callback_response.data = ResponseData::None; //Clear
+        self.last_callback_response.data = ResponseData::None; //Clear
     }
 
-    /***********************/
-    /* Dia adapter methods */
-    /***********************/
+    /************************/
+    /* Dia adapter callback */
+    /************************/
     ///Callback to receive dia-api data
-    pub fn callback(&mut self, err: String, data: ResponseData){
+    pub fn callback(&mut self, request_id: U128, err: String, data: ResponseData){
         //verify data origin
         assert!(env::signer_account_id() == SIGNER_DIA_ORACLES_ACCOUNT_ID);
+        //check for errrors in the request
+        assert!(err.len()==0,err);
         //use quote
         match &data {
             ResponseData::None => env::log("empty data".as_bytes()),
             ResponseData::Quote(x)=>env::log(format!("Quote {} {}",x.Name,x.Price).as_bytes())
         }
         //store last response
-        self.callback_response = Response {
+        self.last_callback_response = Response {
+            request_id: request_id,
             err: err,
             data: data
         };
