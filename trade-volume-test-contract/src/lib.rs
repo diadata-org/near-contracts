@@ -53,7 +53,6 @@ impl Default for TradeVolumeTestContract {
 #[near_bindgen]
 impl TradeVolumeTestContract {
 
-    ///Initialize the contract with a random id
     #[init]
     pub fn new()-> Self{
         /* Prevent re-initializations */
@@ -105,10 +104,9 @@ impl TradeVolumeTestContract {
         );
     }
 
-    ///View the dia-adapter response to the contract's request
+    ///View the last dia-adapter response to the contract's request
     pub fn get_callback_response(&self)-> Response{
         return self.callback_response.clone();
-
     }
 
     ///Clear cached response
