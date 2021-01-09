@@ -33,7 +33,7 @@ The main smart contract `contract.dia.oracles.near` stores internally pending re
 * data-item (String)
 * callback method (String)
 
-`contract.dia.oracles.near` has a method to report how many pending requests there are: `get_pending_requests_count()` and another to read all existing requests: `get_pending_requests() -> Vec<RequestInfo>`
+The main gaeway contract has a method to report how many pending requests there are: `get_pending_requests_count()` and another to read all existing requests: `get_pending_requests() -> Vec<RequestInfo>`
 
 `contract.dia.oracles.near` has an owner’s method to remove pending request (once the request is completed): `remove({contract_id:string, request_id:U128})`
 
@@ -69,3 +69,12 @@ The following steps are included in the file [deploy-testnet.sh](deploy-testnet.
     Test contracts are initialized with a request id that is incremented for every request and can be set/obtain using the `set_id` and `get_id` functions of the contract.
 
 Once all the contracts are deployed in testnet, you can run the integration test from the [dia-adapter repostory](https://github.com/Narwallets/dia-adapter)
+
+## DIADATA Testnet Infrastructure
+In order to facilitate developing and testing, we will have a running version of the infraestructure in testnet at the near address `contract.dia.oracles.testnet`, and our own server running `near-adapter` to process pending requests.
+
+All the client-contract examples run against this test infraestructure.
+
+You can also use this infraestruture for testing at testnet.
+
+While testing, you can use `near view contract.dia.oracles.testnet get_pending_requests` to check all pending requests (including other contracts using the infrastructure) at any time.

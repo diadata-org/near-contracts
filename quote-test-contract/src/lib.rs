@@ -13,8 +13,8 @@ const ONE_NEAR:u128 = 1_000_000_000_000_000_000_000_000;
 const ONE_NEAR_CENT:u128 = ONE_NEAR/100;
 const DEPOSIT_FOR_REQUEST: u128 = ONE_NEAR_CENT; // amount that clients have to attach to make a request to the api
 const GAS_FOR_REQUEST: Gas = 50_000_000_000_000;
-const DIA_GATEWAY_ACCOUNT_ID: &str = "contract.dia-oracles.testnet";
-const SIGNER_DIA_ORACLES_ACCOUNT_ID:&str  = "dia-oracles.testnet";
+const DIA_GATEWAY_ACCOUNT_ID: &str = "contract.dia.oracles.testnet";
+const SIGNER_DIA_ORACLES_ACCOUNT_ID:&str  = "dia.oracles.testnet";
 
 //contract state
 #[near_bindgen]
@@ -185,8 +185,8 @@ mod tests {
     /// Defines the context for the contract
     fn get_context(predecessor_account_id: String, storage_usage: u64) -> VMContext {
         VMContext {
-            current_account_id: "dia-oracles.testnet".to_string(),
-            signer_account_id: "dia-oracles.testnet".to_string(),
+            current_account_id: "dia.oracles.testnet".to_string(),
+            signer_account_id: "dia.oracles.testnet".to_string(),
             signer_account_pk: vec![0, 1, 2],
             predecessor_account_id,
             input: vec![],

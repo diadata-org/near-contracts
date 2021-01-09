@@ -2,4 +2,5 @@
 /res/
 /target/
 .lock
-/neardev/
+private
+

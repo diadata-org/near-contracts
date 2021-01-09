@@ -10,14 +10,14 @@ bash build.sh
 ## GATEWAY MAIN CONTRACT
 ##---------------------
 ## Use dia-oracles.testnet credentials for test contracts (add-key was called on acc creation)
-cp ~/.near-credentials/default/dia-oracles.testnet.json ~/.near-credentials/default/contract.dia-oracles.testnet.json
+#cp ~/.near-credentials/default/dia-oracles.testnet.json ~/.near-credentials/default/contract.dia-oracles.testnet.json
 #create contract.dia-oracles.testnet account
 #near add-key contract.dia-oracles.testnet 4rW9mncNoTvEGhFLgmcak5gbmqcL5Y5v89FcN23QujsT
 #near create-account contract.dia-oracles.testnet --masterAccount dia-oracles.testnet
 #near deploy contract.dia-oracles.testnet res/dia_contract.wasm new '{"owner_id":"dia-oracles.testnet"}' 
 
 ## deploy no-init
-near deploy contract.dia-oracles.testnet res/dia_contract.wasm
+#near deploy contract.dia-oracles.testnet res/dia_contract.wasm
 
 ##---------------------
 ## QUOTE TEST CONTRACT
