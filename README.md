@@ -2,7 +2,7 @@
 
 ## DIA Smart Contract
 
-The DIA smart contract for NEAR (dia-sc) deployed on `contract.dia.oracles.near` allows any NEAR smart contract to request [DIA oracles data](https://diadata.org/).
+The DIA smart contract for NEAR (dia-sc) deployed on `contract.dia.oracles.near` allows any NEAR smart contract to request live [DIA oracles data](https://diadata.org/).
 
 The main contract API endpoint is the `contract.dia.oracles.near.request()` function. The parameters to the request function include: 
 * A contract-specific request id.
